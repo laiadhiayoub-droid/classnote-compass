@@ -14,16 +14,365 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      banned_users: {
+        Row: {
+          banned_at: string
+          banned_by: string | null
+          email: string
+          reason: string | null
+        }
+        Insert: {
+          banned_at?: string
+          banned_by?: string | null
+          email: string
+          reason?: string | null
+        }
+        Update: {
+          banned_at?: string
+          banned_by?: string | null
+          email?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
+      bookmarks: {
+        Row: {
+          created_at: string
+          id: string
+          lesson_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lesson_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lesson_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookmarks_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      formatted_pages: {
+        Row: {
+          document: Json | null
+          error_message: string | null
+          lesson_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          document?: Json | null
+          error_message?: string | null
+          lesson_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          document?: Json | null
+          error_message?: string | null
+          lesson_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "formatted_pages_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: true
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lesson_views: {
+        Row: {
+          id: string
+          lesson_id: string
+          subject: string
+          user_id: string
+          viewed_at: string
+        }
+        Insert: {
+          id?: string
+          lesson_id: string
+          subject: string
+          user_id: string
+          viewed_at?: string
+        }
+        Update: {
+          id?: string
+          lesson_id?: string
+          subject?: string
+          user_id?: string
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_views_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lessons: {
+        Row: {
+          content_type: string
+          created_at: string
+          description: string | null
+          domain: string | null
+          grouped_pages: boolean
+          id: string
+          image_path: string
+          order_index: number
+          page_number: number
+          parent_lesson_id: string | null
+          resource_links: string[]
+          semester: string | null
+          subject: string
+          title: string
+          unit: string | null
+          user_id: string
+        }
+        Insert: {
+          content_type: string
+          created_at?: string
+          description?: string | null
+          domain?: string | null
+          grouped_pages?: boolean
+          id?: string
+          image_path: string
+          order_index?: number
+          page_number?: number
+          parent_lesson_id?: string | null
+          resource_links?: string[]
+          semester?: string | null
+          subject: string
+          title: string
+          unit?: string | null
+          user_id: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string
+          description?: string | null
+          domain?: string | null
+          grouped_pages?: boolean
+          id?: string
+          image_path?: string
+          order_index?: number
+          page_number?: number
+          parent_lesson_id?: string | null
+          resource_links?: string[]
+          semester?: string | null
+          subject?: string
+          title?: string
+          unit?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lessons_parent_lesson_id_fkey"
+            columns: ["parent_lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lessons_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notebook_generation_state: {
+        Row: {
+          id: number
+          paused: boolean
+          reason: string | null
+        }
+        Insert: {
+          id?: number
+          paused?: boolean
+          reason?: string | null
+        }
+        Update: {
+          id?: number
+          paused?: boolean
+          reason?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      site_announcement: {
+        Row: {
+          active: boolean
+          id: number
+          message: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          id?: number
+          message?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          id?: number
+          message?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      suggestions: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suggestions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_ban: { Args: { _email: string }; Returns: undefined }
+      admin_list_users: {
+        Args: never
+        Returns: {
+          email: string
+          full_name: string
+          id: string
+          roles: Database["public"]["Enums"]["app_role"][]
+        }[]
+      }
+      admin_list_users_full: {
+        Args: never
+        Returns: {
+          banned: boolean
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          lessons_count: number
+          roles: Database["public"]["Enums"]["app_role"][]
+        }[]
+      }
+      admin_set_hidden: {
+        Args: { _hidden: boolean; _user_id: string }
+        Returns: undefined
+      }
+      admin_set_name: {
+        Args: { _name: string; _user_id: string }
+        Returns: undefined
+      }
+      admin_set_subscriber: {
+        Args: { _is_subscriber: boolean; _user_id: string }
+        Returns: undefined
+      }
+      admin_set_writer: {
+        Args: { _is_writer: boolean; _user_id: string }
+        Returns: undefined
+      }
+      admin_stats: {
+        Args: never
+        Returns: {
+          banned: number
+          lessons: number
+          students: number
+          top_subjects: Json
+        }[]
+      }
+      current_user_banned: { Args: never; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      visible_author_ids: {
+        Args: never
+        Returns: {
+          id: string
+        }[]
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "writer" | "student" | "subscriber" | "hidden"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +499,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "writer", "student", "subscriber", "hidden"],
+    },
   },
 } as const
