@@ -29,5 +29,6 @@
 - [x] Verify existing image-processing checks; optimization/editing remain available.
 - [x] Add admin-only suggestions and admin student-list toggle.
 - [x] Add standalone hidden role with enforced identity privacy and fail-closed author filtering.
-- [ ] Verify authenticated publishing and suggestion readback, and mobile layouts.
+- [x] Verify signed-in optional-link controls, suggestion submission/admin readback/deletion, student-list toggle, and phone layout without horizontal overflow.
+- [ ] Verify actual notebook publishing and student-only permissions (blocked: no source photos or non-admin student account; old-data import deferred).
 - [x] Skip old-data import for now, as requested; do not add sample lessons or student accounts.
