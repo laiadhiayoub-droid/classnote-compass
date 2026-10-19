@@ -250,21 +250,59 @@ export type Database = {
       }
       profiles: {
         Row: {
+          bio_link: string | null
+          birth_date: string | null
+          class_stream: string | null
           created_at: string
           full_name: string | null
           id: string
         }
         Insert: {
+          bio_link?: string | null
+          birth_date?: string | null
+          class_stream?: string | null
           created_at?: string
           full_name?: string | null
           id: string
         }
         Update: {
+          bio_link?: string | null
+          birth_date?: string | null
+          class_stream?: string | null
           created_at?: string
           full_name?: string | null
           id?: string
         }
         Relationships: []
+      }
+      registration_notifications: {
+        Row: {
+          created_at: string
+          dismissed_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dismissed_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dismissed_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registration_notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       site_announcement: {
         Row: {
@@ -373,6 +411,17 @@ export type Database = {
         }
         Returns: undefined
       }
+      admin_save_student_profile: {
+        Args: {
+          _bio_link: string
+          _birth_date: string
+          _class_stream: string
+          _name: string
+          _roles: Database["public"]["Enums"]["app_role"][]
+          _user_id: string
+        }
+        Returns: undefined
+      }
       admin_set_hidden: {
         Args: { _hidden: boolean; _user_id: string }
         Returns: undefined
@@ -398,6 +447,15 @@ export type Database = {
           top_subjects: Json
         }[]
       }
+      admin_student_profiles: {
+        Args: never
+        Returns: {
+          bio_link: string
+          birth_date: string
+          class_stream: string
+          id: string
+        }[]
+      }
       current_user_banned: { Args: never; Returns: boolean }
       has_role: {
         Args: {
@@ -409,6 +467,16 @@ export type Database = {
       student_directory: {
         Args: never
         Returns: {
+          full_name: string
+          id: string
+        }[]
+      }
+      student_directory_profiles: {
+        Args: never
+        Returns: {
+          bio_link: string
+          birth_date: string
+          class_stream: string
           full_name: string
           id: string
         }[]

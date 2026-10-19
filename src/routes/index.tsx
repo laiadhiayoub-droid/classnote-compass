@@ -25,6 +25,9 @@ import { DhikrPill } from "@/components/DhikrPill";
 import { SUBJECTS, CONTENT_TYPES, SEMESTERS, subjectLabelL, contentTypeLabelL, semesterLabelL } from "@/lib/library";
 import { BoundNotebookReader } from "@/components/BoundNotebookReader";
 import { StudentOnboarding } from "@/components/StudentOnboarding";
+import { ProfileSettingsButton } from "@/components/StudentProfile";
+import { studentProfileQuery } from "@/lib/student-profile-query";
+import { profileComplete } from "@/lib/student-profile";
 import { nextPageNumber, orderedBookPages } from "@/lib/notebook";
 import { generateFormattedPage } from "@/lib/notebook.functions";
 import { useServerFn } from "@tanstack/react-start";
@@ -82,6 +85,7 @@ function Index() {
   const qc = useQueryClient();
   const { t, lang } = useI18n();
 
+  const ownProfile = useQuery(studentProfileQuery);
   const profiles = useQuery({
     queryKey: ["profiles"],
     queryFn: async () => {
@@ -316,6 +320,7 @@ function Index() {
             </span>
           </button>
           {user && <SuggestionButton />}
+          {user && <ProfileSettingsButton />}
           <ThemeToggle />
           <LanguageMenu />
           {ready && (user ? (
@@ -549,8 +554,8 @@ function Index() {
       )}
       <DhikrPill />
 
-      {needsName && user && <NameDialog userId={user.id} onDone={() => qc.invalidateQueries({ queryKey: ["profiles"] })} />}
-      {user && roles.isSuccess && <StudentOnboarding userId={user.id} roles={roles.data} named={!!myProfile?.full_name} onView={next => { setOpenBook(null); setView(next); }} />}
+      {needsName && user && roles.isSuccess && (!roles.data?.includes("student") || isAdmin) && <NameDialog userId={user.id} onDone={() => qc.invalidateQueries({ queryKey: ["profiles"] })} />}
+      {user && roles.isSuccess && <StudentOnboarding userId={user.id} roles={roles.data} named={profileComplete(ownProfile.data?.profile)} onView={next => { setOpenBook(null); setView(next); }} />}
       <FilterDialog open={filterOpen} onOpenChange={setFilterOpen} filters={filters} onApply={setFilters} units={unitOptions} />
       <Dialog open={!!deleting} onOpenChange={(o) => { if (!o) setDeleting(null); }}>
         <DialogContent className="max-w-sm">
