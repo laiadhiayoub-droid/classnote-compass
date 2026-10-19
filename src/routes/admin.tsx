@@ -19,6 +19,10 @@ import { SuggestionsPanel } from "@/components/Suggestions";
 import { ThemeToggle, LanguageMenu } from "@/components/HeaderControls";
 import { SUBJECTS, CONTENT_TYPES, subjectLabelL, contentTypeLabelL } from "@/lib/library";
 import { useI18n } from "@/lib/i18n";
+import { PreregistrationPanel } from "@/components/PreregistrationPanel";
+import { BoundNotebookReader } from "@/components/BoundNotebookReader";
+import { groupPages } from "@/lib/publishing";
+import { orderedBookPages } from "@/lib/notebook";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -204,6 +208,7 @@ function UsersPanel() {
 
   return (
     <div className="space-y-4 pt-3">
+      <PreregistrationPanel />
       <div className="flex flex-wrap gap-2">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="size-4 absolute top-1/2 -translate-y-1/2 start-3 text-muted-foreground" />
@@ -329,7 +334,7 @@ function BannedPanel() {
   );
 }
 
-type L = { id: string; title: string; subject: string; content_type: string; domain: string | null; unit: string | null; image_path: string; user_id: string; created_at: string };
+type L = { id: string; title: string; subject: string; content_type: string; domain: string | null; unit: string | null; image_path: string; user_id: string; created_at: string; parent_lesson_id: string | null; grouped_pages: boolean; page_number: number; order_index: number; description: string | null; resource_links: string[] };
 
 function LessonsPanel() {
   const { t, lang } = useI18n();
@@ -337,11 +342,12 @@ function LessonsPanel() {
   const [q, setQ] = useState("");
   const [subject, setSubject] = useState("all");
   const [edit, setEdit] = useState<L | null>(null);
+  const [preview, setPreview] = useState<L | null>(null);
   const data = useQuery({
     queryKey: ["admin-lessons"],
     queryFn: async () => {
       const [l, p] = await Promise.all([
-        supabase.from("lessons").select("id,title,subject,content_type,domain,unit,image_path,user_id,created_at").order("created_at", { ascending: false }),
+        supabase.from("lessons").select("*").order("created_at", { ascending: false }),
         supabase.from("profiles").select("id, full_name"),
       ]);
       if (l.error) throw l.error;
@@ -380,6 +386,7 @@ function LessonsPanel() {
               <p className="font-bold truncate">{l.title}</p>
               <p className="text-xs text-muted-foreground">{subjectLabelL(l.subject, lang)} · {contentTypeLabelL(l.content_type, lang)} · {data.data?.names.get(l.user_id) || t("student")}</p>
             </div>
+            <Button size="icon" variant="ghost" className="size-10 shrink-0" aria-label={t("previewLesson")} title={t("previewLesson")} onClick={() => setPreview(l)}><Eye className="size-4" /></Button>
             <Button size="icon" variant="ghost" className="size-10 shrink-0" aria-label={t("editText")} onClick={() => setEdit(l)}><Pencil className="size-4" /></Button>
             <Button size="icon" variant="ghost" className="size-10 shrink-0 text-destructive" aria-label={t("delete")} onClick={() => del(l)}><Trash2 className="size-4" /></Button>
           </li>
@@ -387,6 +394,7 @@ function LessonsPanel() {
         {data.isSuccess && filtered.length === 0 && <p className="text-center text-muted-foreground py-8">{t("noLessonsAdmin")}</p>}
       </ul>
       {edit && <EditLessonDialog lesson={edit} onClose={() => setEdit(null)} onDone={refresh} />}
+      {preview && <BoundNotebookReader pages={orderedBookPages(groupPages((data.data?.lessons ?? []).filter(l => l.user_id === preview.user_id && l.subject === preview.subject && l.content_type === preview.content_type), preview))} initialId={preview.id} roles={["admin"]} onClose={() => setPreview(null)} />}
     </div>
   );
 }

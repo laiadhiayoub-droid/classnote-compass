@@ -20,4 +20,8 @@
 - Use the tested visibility predicate in publishing helpers for author filtering; unknown visibility must fail closed to avoid exposing hidden accounts during loading.
 - Filter notebook covers and opened notebook pages through the shared classNotebookPages predicate so summaries cannot leak through sibling views.
 - The dedicated suggestions route loads authenticated community data via a query-backed loader; its directory RPC returns only public names/IDs and excludes hidden accounts server-side, while suggestion SELECT policies protect hidden authors and banned viewers.
+- Keep first-time tour completion scoped to the authenticated student ID in browser storage so shared devices do not suppress other students' tours.
+- Keep lesson images private; use renewable signed URLs and bounded image-load retries in the shared reader so all preview surfaces share the same recovery.
+- Email pre-registration is admin-managed through restricted RPCs; an auth lifecycle trigger consumes it once for verified Google accounts so user-editable metadata cannot grant roles.
+- Admin lesson previews reuse the bound notebook reader and deterministic page ordering so grouped uploads remain intact.
 
