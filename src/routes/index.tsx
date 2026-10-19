@@ -33,7 +33,7 @@ import { useI18n } from "@/lib/i18n";
 import { SuggestionButton } from "@/components/Suggestions";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { pageBinding, displayEntries, groupPages, parseResourceLinks } from "@/lib/publishing";
+import { pageBinding, displayEntries, groupPages, parseResourceLinks, isAuthorVisible } from "@/lib/publishing";
 import { DEFAULT_EDITS, processImage, renderEdited, type ImageEdits } from "@/lib/image-process";
 import { ocrPages } from "@/lib/ocr";
 import type { Database } from "@/integrations/supabase/types";
@@ -121,10 +121,7 @@ function Index() {
 
   // Hidden-role accounts and their content are invisible to everyone but themselves and admins.
   const authorVisible = useMemo(() => {
-    if (!user) return () => false;
-    const visible = visibleAuthors.data;
-    if (!visible) return () => true; // still loading — don't flash-hide
-    return (userId: string) => userId === user.id || visible.has(userId);
+    return (userId: string) => isAuthorVisible(userId, user?.id, visibleAuthors.data);
   }, [visibleAuthors.data, user]);
 
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
@@ -961,7 +958,7 @@ function UploadDialog({ open, onOpenChange, userId, defaultSubject, myLessons, o
         <DialogHeader><DialogTitle className="pe-8">{t("addLessonOrSummary")}</DialogTitle></DialogHeader>
         <div className="space-y-3">
           <div className="space-y-1.5"><Label htmlFor="upload-title">{t("lessonTitle")}</Label>
-            <Input id="upload-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="El pretérito indefinido" /></div>
+            <Input id="upload-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("titlePlaceholder")} /></div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5"><Label>{t("subject")}</Label>
               <Select value={subject} onValueChange={(v) => { setSubject(v); setParentId(""); }}>
@@ -986,7 +983,7 @@ function UploadDialog({ open, onOpenChange, userId, defaultSubject, myLessons, o
           <OcrButton files={files} edits={edits} onText={setDescription}
             onUnit={(u) => setUnit((v) => v.trim() ? v : u)} onDomain={(d) => setDomain((v) => v.trim() ? v : d)} />
           <div className="space-y-1.5"><Label htmlFor="summary-details">{t("extraDetails")}</Label><Textarea id="summary-details" rows={5} value={description} onChange={e => setDescription(e.target.value)} /></div>
-          <div className="space-y-1.5"><Label htmlFor="resource-links">{t("externalLinks")}</Label><Textarea id="resource-links" dir="ltr" value={links} onChange={e => setLinks(e.target.value)} placeholder="https://youtube.com/watch?v=…" /></div>
+          <div className="space-y-1.5"><Label htmlFor="resource-links">{t("externalLinks")}</Label><Textarea id="resource-links" dir="ltr" value={links} onChange={e => setLinks(e.target.value)} placeholder={t("resourceLinksPlaceholder")} /></div>
           <label className="flex items-center gap-2 text-sm cursor-pointer">
             <Checkbox checked={isCont} onCheckedChange={(v) => setIsCont(!!v)} disabled={roots.length === 0} />
             {t("continuationToggle")} {roots.length === 0 && <span className="text-muted-foreground">{t("noPreviousLessons")}</span>}
@@ -1030,6 +1027,7 @@ function SummaryDialog({ open, onOpenChange, userId, defaultSubject, myLessons, 
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState(defaultSubject);
   const [description, setDescription] = useState("");
+  const [links, setLinks] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [edits, setEdits] = useState<ImageEdits[]>([]);
   const [editing, setEditing] = useState<number | null>(null);
@@ -1041,13 +1039,16 @@ function SummaryDialog({ open, onOpenChange, userId, defaultSubject, myLessons, 
   const notebook = myLessons.filter((l) => l.subject === subject);
 
   function resetForm() {
-    setTitle(""); setDescription(""); setFiles([]); setEdits([]); setProgress("");
+    setTitle(""); setDescription(""); setLinks(""); setFiles([]); setEdits([]); setProgress("");
   }
 
   async function submit() {
     if (busy) return;
     if (!title.trim()) { toast.error(t("titleRequired")); return; }
     if (!files.length) { toast.error(t("photosRequired")); return; }
+    let resourceLinks: string[];
+    try { resourceLinks = parseResourceLinks(links); }
+    catch { toast.error(t("linksInvalid")); return; }
     setBusy(true);
     try {
       const rootId = crypto.randomUUID();
@@ -1060,7 +1061,7 @@ function SummaryDialog({ open, onOpenChange, userId, defaultSubject, myLessons, 
         buildRow: () => ({
           user_id: userId, title: title.trim(), subject, content_type: "summary",
           semester: null, domain: null, unit: null,
-          description: description.trim() || null, resource_links: [],
+          description: description.trim() || null, resource_links: resourceLinks,
         }),
       });
       onDone();
@@ -1082,7 +1083,7 @@ function SummaryDialog({ open, onOpenChange, userId, defaultSubject, myLessons, 
         <DialogHeader><DialogTitle className="pe-8">{t("addSummary")}</DialogTitle></DialogHeader>
         <div className="space-y-3">
           <div className="space-y-1.5"><Label htmlFor="sum-title">{t("summaryTitle")} *</Label>
-            <Input id="sum-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="El pretérito indefinido" /></div>
+            <Input id="sum-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("titlePlaceholder")} /></div>
           <div className="space-y-1.5"><Label>{t("subject")}</Label>
             <Select value={subject} onValueChange={setSubject}>
               <SelectTrigger><SelectValue /></SelectTrigger>
@@ -1100,6 +1101,7 @@ function SummaryDialog({ open, onOpenChange, userId, defaultSubject, myLessons, 
           <PhotoPicker files={files} setFiles={setFiles} edits={edits} setEdits={setEdits} busy={busy} setEditing={setEditing} />
           <OcrButton files={files} edits={edits} onText={setDescription} />
           <div className="space-y-1.5"><Label htmlFor="sum-details">{t("extraDetails")}</Label><Textarea id="sum-details" rows={5} value={description} onChange={e => setDescription(e.target.value)} /></div>
+          <div className="space-y-1.5"><Label htmlFor="sum-links">{t("externalLinks")}</Label><Textarea id="sum-links" dir="ltr" value={links} onChange={e => setLinks(e.target.value)} placeholder={t("resourceLinksPlaceholder")} /></div>
           <ImageEditor file={editing !== null ? files[editing] ?? null : null} edits={editing !== null ? edits[editing] ?? DEFAULT_EDITS : DEFAULT_EDITS}
             open={editing !== null} onOpenChange={(o) => { if (!o) setEditing(null); }}
             onSave={(e) => { const i = editing; if (i !== null) setEdits(prev => prev.map((x, j) => j === i ? e : x)); }} />

@@ -1,5 +1,16 @@
 import { describe, it, expect } from "vitest";
-import { pageBinding, displayEntries, groupPages, parseResourceLinks } from "@/lib/publishing";
+import { pageBinding, displayEntries, groupPages, parseResourceLinks, isAuthorVisible } from "@/lib/publishing";
+describe("hidden author visibility", () => {
+  it("hides other accounts until visibility is known", () => {
+    expect(isAuthorVisible("hidden", "student", undefined)).toBe(false);
+    expect(isAuthorVisible("hidden", "student", new Set(["public"]))).toBe(false);
+  });
+  it("allows the owner and authorized viewers to see the account", () => {
+    expect(isAuthorVisible("hidden", "hidden", undefined)).toBe(true);
+    expect(isAuthorVisible("hidden", "admin", new Set(["hidden"]))).toBe(true);
+    expect(isAuthorVisible("hidden", undefined, new Set(["hidden"]))).toBe(false);
+  });
+});
 describe("multi-page publishing", () => {
   it("binds grouped images to one root and preserves page order", () => {
     expect(pageBinding(1, true, "root", null, 1)).toMatchObject({ parent_lesson_id: "root", page_number: 2, grouped_pages: true });

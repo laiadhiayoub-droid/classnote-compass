@@ -1,3 +1,7 @@
+export function isAuthorVisible(authorId: string, viewerId: string | undefined, visibleAuthors: ReadonlySet<string> | undefined): boolean {
+  return !!viewerId && (authorId === viewerId || visibleAuthors?.has(authorId) === true);
+}
+
 export function parseResourceLinks(text: string): string[] {
   return text.split(/\n+/).map(s => s.trim()).filter(Boolean).map(value => {
     const url = new URL(value);

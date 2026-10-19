@@ -81,6 +81,8 @@ const STRINGS = {
   addLessonOrSummary: { ar: "إضافة درس أو ملخص", en: "Add lesson or summary", fr: "Ajouter une leçon ou un résumé", es: "Añadir lección o resumen" },
   lessonTitle: { ar: "عنوان الدرس *", en: "Lesson title *", fr: "Titre de la leçon *", es: "Título de la lección *" },
   summaryTitle: { ar: "عنوان الملخص", en: "Summary title", fr: "Titre du résumé", es: "Título del resumen" },
+  titlePlaceholder: { ar: "مثلاً: الماضي البسيط", en: "e.g. The simple past", fr: "ex. Le passé simple", es: "p. ej. El pretérito indefinido" },
+  resourceLinksPlaceholder: { ar: "https://example.com", en: "https://example.com", fr: "https://example.com", es: "https://example.com" },
   semesterRequired: { ar: "الفصل الدراسي *", en: "Semester *", fr: "Semestre *", es: "Semestre *" },
   domainLabel: { ar: "الميدان / المجال", en: "Domain / field", fr: "Domaine / champ", es: "Dominio / campo" },
   unitLabel: { ar: "الوحدة", en: "Unit", fr: "Unité", es: "Unidad" },
