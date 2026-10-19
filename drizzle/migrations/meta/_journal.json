@@ -8,6 +8,13 @@
       "when": 1792358372032,
       "tag": "0000_import_soul_script_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792396547572,
+      "tag": "0001_student_community_access",
+      "breakpoints": true
     }
   ]
 }

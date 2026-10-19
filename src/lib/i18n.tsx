@@ -180,6 +180,12 @@ const STRINGS = {
   lockedNotebook: { ar: "هذا الخيار مخصص للمشتركين فقط. يرجى التواصل مع الإدارة للتفعيل.", en: "This option is for subscribers only. Please contact the administration to activate it.", fr: "Cette option est réservée aux abonnés. Contactez l'administration pour l'activer.", es: "Esta opción es solo para suscriptores. Contacta con la administración para activarla." },
   formatUnavailable: { ar: "خدمة التحويل غير مفعّلة.", en: "The formatting service is unavailable.", fr: "Le service de mise en forme est indisponible.", es: "El servicio de formateo no está disponible." },
   // Suggestions
+  studentDirectory: { ar: "دليل التلاميذ", en: "Student directory", fr: "Annuaire des élèves", es: "Directorio de alumnos" },
+  searchStudents: { ar: "ابحث باسم التلميذ", en: "Search students by name", fr: "Rechercher un élève par nom", es: "Buscar alumnos por nombre" },
+  directoryFailedLoad: { ar: "تعذّر تحميل دليل التلاميذ", en: "Couldn't load the student directory", fr: "Impossible de charger l'annuaire", es: "No se pudo cargar el directorio" },
+  suggestionThreads: { ar: "مواضيع الاقتراحات", en: "Suggestion threads", fr: "Discussions de suggestions", es: "Temas de sugerencias" },
+  communitySignIn: { ar: "سجّل الدخول لعرض الاقتراحات والتلاميذ.", en: "Sign in to see suggestions and students.", fr: "Connectez-vous pour voir les suggestions et les élèves.", es: "Inicia sesión para ver sugerencias y alumnos." },
+  communityRestricted: { ar: "هذا الحساب مقيّد ولا يمكنه الوصول إلى الاقتراحات ودليل التلاميذ.", en: "This account is restricted and cannot access suggestions or the student directory.", fr: "Ce compte est restreint et ne peut pas accéder aux suggestions ni à l'annuaire.", es: "Esta cuenta está restringida y no puede acceder a sugerencias ni al directorio." },
   suggestion: { ar: "اقتراح", en: "Suggestion", fr: "Suggestion", es: "Sugerencia" },
   sendSuggestion: { ar: "إرسال اقتراح", en: "Send a suggestion", fr: "Envoyer une suggestion", es: "Enviar una sugerencia" },
   suggestionPlaceholder: { ar: "الاقتراح", en: "Suggestion", fr: "Suggestion", es: "Sugerencia" },
@@ -282,7 +288,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     if (saved && LANGS.some((l) => l.id === saved)) setLangState(saved);
   }, []);
   useEffect(() => {
-    const def = LANGS.find((l) => l.id === lang)!;
+    const def = LANGS.find((l) => l.id === lang);
+    if (!def) return;
     document.documentElement.lang = lang;
     document.documentElement.dir = def.dir;
   }, [lang]);
