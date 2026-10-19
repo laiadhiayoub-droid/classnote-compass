@@ -25,7 +25,7 @@ export function StudentOnboarding({ userId, roles, named, onView }: { userId: st
   const bodies = ["tourLibraryBody", "tourRolesBody", "tourSuggestionsBody"] as const;
   return <Dialog open={open} onOpenChange={value => { if (!value) finish(); }}>
     <DialogContent className="sm:max-w-lg gap-5 p-5 sm:p-8" dir={lang === "ar" ? "rtl" : "ltr"}>
-      <div className="flex items-center gap-3 pe-8"><Icon className="size-8 text-primary shrink-0" /><p className="text-sm text-muted-foreground" aria-live="polite">{t("tourProgress", { i: step + 1, n: 3 })}</p></div>
+      <div className="flex items-center gap-3 pr-8"><Icon className="size-8 text-primary shrink-0" /><p className="text-sm text-muted-foreground" aria-live="polite">{t("tourProgress", { i: step + 1, n: 3 })}</p></div>
       <DialogTitle className="text-2xl leading-snug">{t(titles[step] ?? "tourLibraryTitle")}</DialogTitle>
       <DialogDescription className="text-base leading-relaxed whitespace-pre-line">{t(bodies[step] ?? "tourLibraryBody")}</DialogDescription>
       {step === 0 && <div className="grid grid-cols-2 gap-2"><Button variant="outline" onClick={() => onView("books")}><BookOpen className="size-4" />{t("books")}</Button><Button variant="outline" onClick={() => onView("summaries")}><FileText className="size-4" />{t("summaries")}</Button></div>}
