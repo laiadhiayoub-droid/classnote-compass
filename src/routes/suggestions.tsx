@@ -1,10 +1,9 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowRight, Lightbulb, Loader2, Search, Send, Trash2, Users } from "lucide-react";
+import { ArrowRight, Lightbulb, Loader2, Send, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ThemeToggle, LanguageMenu } from "@/components/HeaderControls";
@@ -57,7 +56,6 @@ function SuggestionsPage() {
   const { data } = useSuspenseQuery(communityQuery);
   const qc = useQueryClient();
   const [message, setMessage] = useState("");
-  const [search, setSearch] = useState("");
   const [busy, setBusy] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
 
@@ -87,7 +85,7 @@ function SuggestionsPage() {
     finally { setDeleting(null); }
   }
 
-  const students = data.students.filter(s => (s.full_name ?? "").toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()));
+  const students = data.students;
   return <div className="min-h-screen">
     <header className="border-b bg-card">
       <nav className="mx-auto max-w-5xl px-4 py-3 flex flex-wrap items-center gap-2">
@@ -126,9 +124,6 @@ function SuggestionsPage() {
         </div>
         <section aria-labelledby="student-directory" className="min-w-0 space-y-4 border-t pt-6 lg:border-t-0 lg:border-s lg:ps-6 lg:pt-0">
           <h2 id="student-directory" className="flex items-center gap-2 text-lg font-bold"><Users className="size-5 text-school" />{t("studentDirectory")}</h2>
-          <div className="relative"><Search className="absolute start-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <Input className="ps-9" aria-label={t("searchStudents")} placeholder={t("searchStudents")} value={search} onChange={e => setSearch(e.target.value)} />
-          </div>
           <ul className="divide-y border-y">{students.map(s => <li className="py-3 break-words font-medium" key={s.id}>{s.full_name || t("noName")}</li>)}</ul>
           {students.length === 0 && <p className="text-sm text-muted-foreground">{t("noUsers")}</p>}
         </section>

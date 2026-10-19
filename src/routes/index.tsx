@@ -24,6 +24,7 @@ import { Timetable } from "@/components/Timetable";
 import { DhikrPill } from "@/components/DhikrPill";
 import { SUBJECTS, CONTENT_TYPES, SEMESTERS, subjectLabelL, contentTypeLabelL, semesterLabelL } from "@/lib/library";
 import { BoundNotebookReader } from "@/components/BoundNotebookReader";
+import { StudentOnboarding } from "@/components/StudentOnboarding";
 import { nextPageNumber, orderedBookPages } from "@/lib/notebook";
 import { generateFormattedPage } from "@/lib/notebook.functions";
 import { useServerFn } from "@tanstack/react-start";
@@ -549,6 +550,7 @@ function Index() {
       <DhikrPill />
 
       {needsName && user && <NameDialog userId={user.id} onDone={() => qc.invalidateQueries({ queryKey: ["profiles"] })} />}
+      {user && roles.isSuccess && <StudentOnboarding userId={user.id} roles={roles.data} named={!!myProfile?.full_name} onView={next => { setOpenBook(null); setView(next); }} />}
       <FilterDialog open={filterOpen} onOpenChange={setFilterOpen} filters={filters} onApply={setFilters} units={unitOptions} />
       <Dialog open={!!deleting} onOpenChange={(o) => { if (!o) setDeleting(null); }}>
         <DialogContent className="max-w-sm">
