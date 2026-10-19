@@ -23,10 +23,12 @@
 - [x] Browser OCR auto-fill of unit/domain (editable).
 
 # Uploaded platform updates
-- [ ] Simplify student summaries and store optional descriptions/resource links.
-- [ ] Reorder uploads and bind grouped pages into one card.
-- [ ] Translate the full interface in four languages.
-- [ ] Verify existing automatic image optimization/editing.
-- [ ] Add private suggestions and admin student-list toggle.
-- [ ] Add standalone hidden role with enforced identity privacy.
-- [ ] Verify authenticated flows and mobile layouts; clean temporary content.
+- [x] Simplify student summaries and store optional descriptions/resource links.
+- [x] Reorder uploads and bind grouped pages into one card.
+- [x] Translate interface controls in four languages, including upload placeholders.
+- [x] Verify existing image-processing checks; optimization/editing remain available.
+- [x] Add admin-only suggestions and admin student-list toggle.
+- [x] Add standalone hidden role with enforced identity privacy and fail-closed author filtering.
+- [x] Verify signed-in optional-link controls, suggestion submission/admin readback/deletion, student-list toggle, and phone layout without horizontal overflow.
+- [ ] Verify actual notebook publishing and student-only permissions (blocked: no source photos or non-admin student account; old-data import deferred).
+- [x] Skip old-data import for now, as requested; do not add sample lessons or student accounts.
