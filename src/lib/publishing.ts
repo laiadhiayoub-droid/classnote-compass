@@ -1,3 +1,7 @@
+export function classNotebookPages<T extends { content_type: string }>(pages: T[]): T[] {
+  return pages.filter(page => page.content_type === "lesson");
+}
+
 export function isAuthorVisible(authorId: string, viewerId: string | undefined, visibleAuthors: ReadonlySet<string> | undefined): boolean {
   return !!viewerId && (authorId === viewerId || visibleAuthors?.has(authorId) === true);
 }

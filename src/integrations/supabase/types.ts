@@ -364,6 +364,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      student_directory: {
+        Args: never
+        Returns: {
+          full_name: string
+          id: string
+        }[]
+      }
       visible_author_ids: {
         Args: never
         Returns: {

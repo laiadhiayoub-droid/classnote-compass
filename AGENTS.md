@@ -18,4 +18,6 @@
 - Uploads go through the shared `uploadPhotoRows` helper in `src/routes/index.tsx`; writers/admins use `UploadDialog`, students use the simplified `SummaryDialog`, which always merges multi-photo summaries into one grouped card.
 - The `hidden` role hides a user's identity and content from everyone but themselves and admins: enforced by the lessons SELECT RLS policy plus the client-side `authorVisible` filter — never bypass either.
 - Use the tested visibility predicate in publishing helpers for author filtering; unknown visibility must fail closed to avoid exposing hidden accounts during loading.
+- Filter notebook covers and opened notebook pages through the shared classNotebookPages predicate so summaries cannot leak through sibling views.
+- The dedicated suggestions route loads authenticated community data via a query-backed loader; its directory RPC returns only public names/IDs and excludes hidden accounts server-side, while suggestion SELECT policies protect hidden authors and banned viewers.
 

@@ -1,36 +1,20 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Lightbulb, Loader2, Trash2, Search } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
 
-export function SuggestionButton({ userId }: { userId: string }) {
+export function SuggestionButton() {
   const { t } = useI18n();
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const [busy, setBusy] = useState(false);
-  async function send() {
-    if (!message.trim() || busy) return;
-    setBusy(true);
-    const { error } = await supabase.from("suggestions").insert({ user_id: userId, message: message.trim() });
-    setBusy(false);
-    if (error) { toast.error(t("suggestionFailed")); return; }
-    toast.success(t("suggestionSent")); setMessage(""); setOpen(false);
-  }
-  return <>
-    <Button variant="ghost" size="icon" className="size-10 shrink-0" aria-label={t("suggestion")} title={t("suggestion")} onClick={() => setOpen(true)}><Lightbulb className="size-5" /></Button>
-    <Dialog open={open} onOpenChange={setOpen}><DialogContent><DialogHeader><DialogTitle>{t("sendSuggestion")}</DialogTitle></DialogHeader>
-      <Textarea aria-label={t("suggestionPlaceholder")} maxLength={2000} rows={5} value={message} onChange={e => setMessage(e.target.value)} />
-      <Button className="h-11" disabled={busy || !message.trim()} onClick={send}>{busy && <Loader2 className="size-4 animate-spin" />}{t("submit")}</Button>
-    </DialogContent></Dialog>
-  </>;
+  return <Button variant="ghost" size="sm" className="h-10 shrink-0 gap-1.5 px-2" asChild>
+    <Link to="/suggestions"><Lightbulb className="size-4" />{t("tabSuggestions")}</Link>
+  </Button>;
 }
 
 type StudentRow = { id: string; email: string; full_name: string | null; roles: string[]; banned: boolean; lessons_count: number };

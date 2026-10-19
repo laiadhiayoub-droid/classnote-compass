@@ -33,7 +33,7 @@ import { useI18n } from "@/lib/i18n";
 import { SuggestionButton } from "@/components/Suggestions";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { pageBinding, displayEntries, groupPages, parseResourceLinks, isAuthorVisible } from "@/lib/publishing";
+import { pageBinding, displayEntries, groupPages, parseResourceLinks, isAuthorVisible, classNotebookPages } from "@/lib/publishing";
 import { DEFAULT_EDITS, processImage, renderEdited, type ImageEdits } from "@/lib/image-process";
 import { ocrPages } from "@/lib/ocr";
 import type { Database } from "@/integrations/supabase/types";
@@ -187,7 +187,8 @@ function Index() {
     if (!id || !lessons.data || zoom) return;
     const target = lessons.data.find((l) => l.id === id);
     if (!target) return;
-    setOpenBook({ userId: target.user_id, subject: target.subject, count: 0, hasNew: false });
+    if (target.content_type === "summary") setView("summaries");
+    else setOpenBook({ userId: target.user_id, subject: target.subject, count: 0, hasNew: false });
     setZoom(target);
   }, [lessons.data, zoom]);
 
@@ -197,7 +198,7 @@ function Index() {
   const books = useMemo(() => {
     const cutoff = Date.now() - NEW_DAYS * 24 * 60 * 60 * 1000;
     const map = new Map<string, Book>();
-    for (const l of displayEntries(lessons.data ?? [])) {
+    for (const l of displayEntries(classNotebookPages(lessons.data ?? []))) {
       if (!authorVisible(l.user_id)) continue;
       if (filters.subject !== "all" && l.subject !== filters.subject) continue;
       if (filters.type !== "all" && l.content_type !== filters.type) continue;
@@ -218,7 +219,7 @@ function Index() {
     if (!openBook) return [];
     const term = bookQ.trim().toLowerCase();
     return orderedBookPages(
-      (lessons.data ?? []).filter((l) =>
+      classNotebookPages(lessons.data ?? []).filter((l) =>
         l.user_id === openBook.userId && l.subject === openBook.subject &&
         (!term || [l.title, l.domain, l.unit].some((v) => v?.toLowerCase().includes(term)))),
     );
@@ -313,7 +314,7 @@ function Index() {
               <span className="block text-xs text-muted-foreground truncate">{t("appSubtitle")}</span>
             </span>
           </button>
-          {user && <SuggestionButton userId={user.id} />}
+          {user && <SuggestionButton />}
           <ThemeToggle />
           <LanguageMenu />
           {ready && (user ? (
@@ -633,7 +634,7 @@ function FilterDialog({ open, onOpenChange, filters, onApply, units }: {
               <SelectTrigger className="bg-card"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t("all")}</SelectItem>
-                {CONTENT_TYPES.map((c) => <SelectItem key={c.id} value={c.id}>{c.labels[lang]}</SelectItem>)}
+                {CONTENT_TYPES.filter(c => c.id === "lesson").map((c) => <SelectItem key={c.id} value={c.id}>{c.labels[lang]}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
