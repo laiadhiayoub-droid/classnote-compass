@@ -23,6 +23,9 @@ import { PreregistrationPanel } from "@/components/PreregistrationPanel";
 import { BoundNotebookReader } from "@/components/BoundNotebookReader";
 import { groupPages } from "@/lib/publishing";
 import { orderedBookPages } from "@/lib/notebook";
+import { ProfileSettingsButton, StudentProfileDialog } from "@/components/StudentProfile";
+import type { StudentProfile } from "@/lib/student-profile";
+import type { Database } from "@/integrations/supabase/types";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -73,7 +76,7 @@ function AdminPage() {
     <div className="min-h-screen mx-auto max-w-5xl px-4 py-8 space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="flex items-center gap-2 text-2xl font-extrabold"><ShieldCheck className="text-school" /> {t("adminDashboard")}</h1>
-        <div className="flex items-center"><ThemeToggle /><LanguageMenu /></div>
+        <div className="flex items-center"><ProfileSettingsButton /><ThemeToggle /><LanguageMenu /></div>
         <Button variant="ghost" asChild><Link to="/"><ArrowRight className="size-4" /> {t("libraryLink")}</Link></Button>
       </div>
       <Stats />
@@ -102,7 +105,7 @@ function Stats() {
     queryFn: async () => {
       const { data, error } = await supabase.rpc("admin_stats");
       if (error) throw error;
-      return data[0]!;
+      return data[0];
     },
   });
   const top = (s.data?.top_subjects as { subject: string; views: number }[] | undefined) ?? [];
@@ -147,6 +150,10 @@ function UsersPanel() {
   const { t } = useI18n();
   const qc = useQueryClient();
   const users = useUsers();
+  const profileDetails = useQuery({ queryKey: ["admin-student-profiles"], queryFn: async () => {
+    const { data, error } = await supabase.rpc("admin_student_profiles");
+    if (error) throw error; return data;
+  }});
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState("all");
   const [busy, setBusy] = useState<string | null>(null);
@@ -246,7 +253,7 @@ function UsersPanel() {
                   <p className="text-xs text-muted-foreground truncate" dir="ltr">{u.email}</p>
                   <p className="text-xs text-muted-foreground">{t("pagesPublished", { n: u.lessons_count })}</p>
                 </div>
-                <Button size="icon" variant="ghost" aria-label={t("editNameAria")} onClick={() => setEdit(u)}><Pencil className="size-4" /></Button>
+                <Button size="icon" variant="ghost" aria-label={t("editStudentProfile")} title={t("editStudentProfile")} disabled={!profileDetails.isSuccess} onClick={() => setEdit(u)}><Pencil className="size-4" /></Button>
                 {admin ? <Badge>{t("adminBadge")}</Badge> : (
                   <>
                     <div className="flex flex-wrap items-center gap-4">
@@ -273,7 +280,8 @@ function UsersPanel() {
           {filtered.length === 0 && <p className="text-center text-muted-foreground py-8">{t("noUsers")}</p>}
         </ul>
       )}
-      {edit && <EditNameDialog user={edit} onClose={() => setEdit(null)} onDone={refresh} />}
+      {profileDetails.isError && <p role="alert" className="text-destructive">{t("directoryFailedLoad")}</p>}
+      {edit && <StudentProfileDialog userId={edit.id} profile={{ id: edit.id, full_name: edit.full_name, birth_date: null, class_stream: null, bio_link: null, ...profileDetails.data?.find(p => p.id === edit.id) } satisfies StudentProfile} adminRoles={edit.roles as Database["public"]["Enums"]["app_role"][]} onClose={() => { setEdit(null); refresh(); }} />}
     </div>
   );
 }

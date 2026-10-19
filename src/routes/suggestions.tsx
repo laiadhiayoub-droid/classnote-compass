@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowRight, Lightbulb, Loader2, Send, Trash2, Users } from "lucide-react";
+import { ArrowRight, Lightbulb, Loader2, Send, Trash2, Users, ExternalLink, GraduationCap, CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,6 +11,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { communityQuery } from "@/lib/community-query";
 import { useI18n } from "@/lib/i18n";
+import { ProfileSettingsButton } from "@/components/StudentProfile";
+import { ageAt, safeBioLink } from "@/lib/student-profile";
 
 export const Route = createFileRoute("/suggestions")({
   ssr: false,
@@ -91,7 +93,7 @@ function SuggestionsPage() {
       <nav className="mx-auto max-w-5xl px-4 py-3 flex flex-wrap items-center gap-2">
         <Button variant="ghost" asChild><Link to="/"><ArrowRight className="size-4" />{t("libraryLink")}</Link></Button>
         <span className="flex-1" />
-        <ThemeToggle /><LanguageMenu />
+        <ProfileSettingsButton /><ThemeToggle /><LanguageMenu />
       </nav>
     </header>
     <main className="mx-auto max-w-5xl px-4 py-8 space-y-8">
@@ -102,7 +104,7 @@ function SuggestionsPage() {
           const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
           if (result.error) toast.error(t("signInFailed"));
         }}>{t("signIn")}</Button>}
-      </section> : <div className="grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+      </section> : <div className="grid gap-10 lg:grid-cols-2">
         <div className="min-w-0 space-y-8">
           <form className="space-y-3" onSubmit={e => { e.preventDefault(); void send(); }}>
             <Label htmlFor="suggestion-message" className="text-base font-bold">{t("sendSuggestion")}</Label>
@@ -124,7 +126,14 @@ function SuggestionsPage() {
         </div>
         <section aria-labelledby="student-directory" className="min-w-0 space-y-4 border-t pt-6 lg:border-t-0 lg:border-s lg:ps-6 lg:pt-0">
           <h2 id="student-directory" className="flex items-center gap-2 text-lg font-bold"><Users className="size-5 text-school" />{t("studentDirectory")}</h2>
-          <ul className="divide-y border-y">{students.map(s => <li className="py-3 break-words font-medium" key={s.id}>{s.full_name || t("noName")}</li>)}</ul>
+          <ul className="grid gap-3">{students.map(s => {
+            const link = safeBioLink(s.bio_link);
+            return <li className="rounded-lg border bg-card p-4 space-y-4 min-w-0" key={s.id}>
+              <div className="flex items-center gap-3"><span aria-hidden="true" className="size-10 shrink-0 rounded-full bg-accent text-accent-foreground grid place-items-center font-bold">{(s.full_name || t("student")).trim().slice(0, 1)}</span><h3 className="font-bold break-words min-w-0">{s.full_name || t("noName")}</h3></div>
+              <dl className="space-y-3 text-sm"><div className="flex gap-2"><GraduationCap className="size-4 text-muted-foreground shrink-0 mt-1" /><div className="min-w-0"><dt className="text-xs text-muted-foreground">{t("classStream")}</dt><dd className="break-words">{s.class_stream || t("notProvided")}</dd></div></div><div className="flex gap-2"><CalendarDays className="size-4 text-muted-foreground shrink-0 mt-1" /><div><dt className="text-xs text-muted-foreground">{t("birthDate")}</dt><dd>{s.birth_date ? <><time dateTime={s.birth_date}>{new Date(`${s.birth_date}T12:00:00`).toLocaleDateString(lang)}</time><span className="text-muted-foreground"> · {t("ageYears", { n: ageAt(s.birth_date) })}</span></> : t("notProvided")}</dd></div></div></dl>
+              {link ? <Button variant="outline" size="sm" asChild><a href={link} target="_blank" rel="noopener noreferrer"><ExternalLink className="size-4" />{t("openBioLink")}</a></Button> : <p className="text-xs text-muted-foreground">{t("openBioLink")} · {t("notProvided")}</p>}
+            </li>;
+          })}</ul>
           {students.length === 0 && <p className="text-sm text-muted-foreground">{t("noUsers")}</p>}
         </section>
       </div>}

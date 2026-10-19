@@ -12,7 +12,7 @@ export const communityQuery = queryOptions({
     const { data: banned, error: banError } = await supabase.rpc("current_user_banned");
     if (banError || !canAccessCommunity(auth.user.id, banned)) return { userId: auth.user.id, allowed: false, admin: false, students: [], suggestions: [] };
     const [students, suggestions, roles] = await Promise.all([
-      supabase.rpc("student_directory"),
+      supabase.rpc("student_directory_profiles"),
       supabase.from("suggestions").select("id,user_id,message,created_at,profiles(full_name)").order("created_at", { ascending: false }),
       supabase.from("user_roles").select("role").eq("user_id", auth.user.id),
     ]);

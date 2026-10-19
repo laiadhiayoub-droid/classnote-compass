@@ -19,7 +19,9 @@
 - The `hidden` role hides a user's identity and content from everyone but themselves and admins: enforced by the lessons SELECT RLS policy plus the client-side `authorVisible` filter — never bypass either.
 - Use the tested visibility predicate in publishing helpers for author filtering; unknown visibility must fail closed to avoid exposing hidden accounts during loading.
 - Filter notebook covers and opened notebook pages through the shared classNotebookPages predicate so summaries cannot leak through sibling views.
-- The dedicated suggestions route loads authenticated community data via a query-backed loader; its directory RPC returns only public names/IDs and excludes hidden accounts server-side, while suggestion SELECT policies protect hidden authors and banned viewers.
+- The dedicated suggestions route loads authenticated community data via a query-backed loader; its directory RPC returns shared profile fields and excludes hidden and banned accounts server-side, while suggestion SELECT policies protect hidden authors and banned viewers.
+- Keep profile fields in profiles, roles in user_roles, and validate profile writes with a database trigger; use the authenticated admin profile RPC for atomic profile/role updates so students cannot escalate privileges.
+- Share profile editing and completion through StudentProfileDialog; gate the student tour on completed profile fields, and create durable admin registration alerts on profile insertion rather than browser visits.
 - Keep first-time tour completion scoped to the authenticated student ID in browser storage so shared devices do not suppress other students' tours.
 - Keep lesson images private; use renewable signed URLs and bounded image-load retries in the shared reader so all preview surfaces share the same recovery.
 - Email pre-registration is admin-managed through restricted RPCs; an auth lifecycle trigger consumes it once for verified Google accounts so user-editable metadata cannot grant roles.

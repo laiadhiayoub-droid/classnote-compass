@@ -16,6 +16,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
 import { AnnouncementBanner, BanGuard } from "@/components/SiteGuards";
 import { I18nProvider } from "@/lib/i18n";
+import { ProfileCompletion } from "@/components/StudentProfile";
+import { RegistrationAlerts } from "@/components/RegistrationAlerts";
 
 function NotFoundComponent() {
   return (
@@ -135,7 +137,9 @@ function RootComponent() {
       <I18nProvider>
       <BanGuard />
       <AnnouncementBanner />
+      <RegistrationAlerts />
       <Outlet />
+      <ProfileCompletion />
       <Toaster position="top-center" richColors dir="rtl" />
       </I18nProvider>
     </QueryClientProvider>
