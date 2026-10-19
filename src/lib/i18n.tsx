@@ -9,6 +9,22 @@ export const LANGS = [
 export type Lang = (typeof LANGS)[number]["id"];
 
 const STRINGS = {
+  profileSettings: { ar: "الملف الشخصي", en: "Profile settings", fr: "Mon profil", es: "Mi perfil" },
+  completeProfile: { ar: "أكمل ملفك الشخصي", en: "Complete your profile", fr: "Complétez votre profil", es: "Completa tu perfil" },
+  profileDirectoryNotice: { ar: "تظهر هذه المعلومات لزملائك في دليل التلاميذ ما لم يكن حسابك مخفياً.", en: "These details are visible to classmates in the directory unless your account is hidden.", fr: "Ces informations sont visibles dans l’annuaire sauf si votre compte est masqué.", es: "Estos datos son visibles para tus compañeros salvo si tu cuenta está oculta." },
+  birthDate: { ar: "تاريخ الميلاد", en: "Date of birth", fr: "Date de naissance", es: "Fecha de nacimiento" },
+  classStream: { ar: "القسم / الشعبة", en: "Class / stream", fr: "Classe / filière", es: "Clase / especialidad" },
+  bioLink: { ar: "رابط التواصل / البايو (اختياري)", en: "Social / bio link (optional)", fr: "Lien social / bio (facultatif)", es: "Enlace social / bio (opcional)" },
+  openBioLink: { ar: "رابط التواصل", en: "Social profile", fr: "Profil social", es: "Perfil social" },
+  notProvided: { ar: "غير محدد", en: "Not provided", fr: "Non renseigné", es: "No indicado" },
+  ageYears: { ar: "{n} سنة", en: "{n} years old", fr: "{n} ans", es: "{n} años" },
+  profileSaved: { ar: "تم حفظ الملف الشخصي", en: "Profile saved", fr: "Profil enregistré", es: "Perfil guardado" },
+  invalidProfile: { ar: "أكمل الاسم وتاريخ الميلاد والقسم، واستعمل رابط HTTP أو HTTPS صالحاً.", en: "Complete your name, birth date and class, and use a valid HTTP or HTTPS link.", fr: "Renseignez le nom, la naissance et la classe et utilisez un lien HTTP ou HTTPS valide.", es: "Completa nombre, nacimiento y clase y usa un enlace HTTP o HTTPS válido." },
+  editStudentProfile: { ar: "تعديل ملف التلميذ", en: "Edit student profile", fr: "Modifier le profil de l’élève", es: "Editar perfil del alumno" },
+  profileRoles: { ar: "الصلاحيات", en: "Roles", fr: "Rôles", es: "Roles" },
+  newRegistrations: { ar: "تسجيلات جديدة: {n}", en: "New registrations: {n}", fr: "Nouvelles inscriptions : {n}", es: "Nuevos registros: {n}" },
+  reviewRegistrations: { ar: "عرض التلاميذ الجدد", en: "Review new students", fr: "Voir les nouveaux élèves", es: "Revisar nuevos alumnos" },
+  dismissRegistration: { ar: "تمت المراجعة", en: "Mark reviewed", fr: "Marquer comme vu", es: "Marcar revisado" },
   tourLibraryTitle: { ar: "أهلاً بك في مكتبة القسم", en: "Welcome to your class library", fr: "Bienvenue dans la bibliothèque", es: "Bienvenido a la biblioteca" },
   tourLibraryBody: { ar: "افتح كراريس القسم من الرئيسية، ثم اختر المادة والكراس لقراءة صفحاته. الملخصات في تبويب مستقل؛ يمكنك قراءتها وإضافة ملخصك هناك.", en: "Open class notebooks from Home, then choose a subject and notebook to read its pages. Summaries have their own tab, where you can read and share your summary.", fr: "Ouvrez les cahiers depuis l’accueil, puis choisissez une matière et un cahier. Les résumés ont leur propre onglet pour lire et partager votre résumé.", es: "Abre los cuadernos desde Inicio y elige una materia y un cuaderno. Los resúmenes tienen su propia pestaña para leer y compartir tu resumen." },
   tourRolesTitle: { ar: "المشتركون والمساهمون", en: "Subscribers and contributors", fr: "Abonnés et contributeurs", es: "Suscriptores y colaboradores" },
