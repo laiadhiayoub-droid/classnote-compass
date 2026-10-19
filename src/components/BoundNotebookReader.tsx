@@ -32,6 +32,7 @@ export function BoundNotebookReader({pages, initialId, roles, onClose}: {pages:P
   const [imgError,setImgError] = useState(false);
   const [lightbox,setLightbox] = useState(false);
   const imageRetries = useRef(0);
+  const activePageId = useRef<string | undefined>(undefined);
   const [failedThumbs, setFailedThumbs] = useState<Set<string>>(new Set());
   async function downloadImage() {
     if(!image.data || !page || downloading) return;
@@ -49,7 +50,7 @@ export function BoundNotebookReader({pages, initialId, roles, onClose}: {pages:P
   }
   useEffect(()=>{setIndex(Math.max(0,pages.findIndex(p=>p.id===initialId)));setMode("original");setFailure(null);setEditing(false);setDraft(null);setLightbox(false);},[initialId]);
   const page=initialId ? pages[index] : undefined;
-  useEffect(()=>{setScale(1);setEditing(false);setDraft(null);setImgError(false);imageRetries.current=0;setLightbox(false);},[page?.id,initialId]);
+  useEffect(()=>{activePageId.current=page?.id;setScale(1);setEditing(false);setDraft(null);setImgError(false);imageRetries.current=0;setLightbox(false);},[page?.id,initialId]);
   const image = useQuery({queryKey:["bound-image",page?.image_path],enabled:!!page,staleTime:IMAGE_URL_STALE_MS,refetchInterval:IMAGE_URL_STALE_MS,retry:2,queryFn:async()=>{
     if(!page) return null;
     return signLessonImage(page.image_path);
@@ -70,7 +71,7 @@ export function BoundNotebookReader({pages, initialId, roles, onClose}: {pages:P
     imageRetries.current += 1;
     const failedId = page?.id;
     const result = await image.refetch();
-    if (!result.isError && failedId === page?.id) setImgError(false);
+    if (!result.isError && failedId === activePageId.current) setImgError(false);
   }
   const formatted = useQuery({queryKey:["formatted-page",page?.id],enabled:!!page && mode==="formatted" && allowed,retry:false,queryFn:async()=>{
     if(!page) return null;
@@ -121,13 +122,13 @@ export function BoundNotebookReader({pages, initialId, roles, onClose}: {pages:P
       </div>
       {pages.length > 1 && <div className="flex gap-2 overflow-x-auto border-b px-4 py-2" role="tablist" aria-label={t("pagesCount",{n:pages.length})}>
         {pages.map((p,i)=>{const thumbUrl=failedThumbs.has(p.id)?undefined:thumb.data?.get(p.image_path);return <Button variant="ghost" key={p.id} role="tab" aria-selected={i===index} onClick={()=>{setIndex(i);setFailure(null);}}
-          className={`shrink-0 rounded-md border-2 overflow-hidden transition ${i===index?"border-primary ring-2 ring-primary/30":"border-border opacity-70 hover:opacity-100"}`}>
+          className={`shrink-0 h-auto p-0 rounded-md border-2 overflow-hidden transition ${i===index?"border-primary ring-2 ring-primary/30":"border-border opacity-70 hover:opacity-100"}`}>
           {thumbUrl
              ? <img src={thumbUrl} alt={t("pageN",{n:i+1})} onError={()=>setFailedThumbs(previous=>new Set(previous).add(p.id))} className="h-16 w-auto max-w-24 object-cover"/>
             : <span className="grid h-16 w-12 place-items-center text-xs text-muted-foreground">{i+1}</span>}
          </Button>;})}
       </div>}
-      {(page?.description || page?.resource_links?.length) && <div className="border-b px-4 py-3 space-y-2 max-h-36 overflow-auto">
+      {!!(page?.description || page?.resource_links?.length) && <div className="border-b px-4 py-3 space-y-2 max-h-36 overflow-auto">
         {page.description && <p className="text-sm whitespace-pre-wrap break-words">{page.description}</p>}
         {page.resource_links?.filter(link=>/^https?:\/\//i.test(link)).map((link,i)=><a key={i} href={link} target="_blank" rel="noopener noreferrer" className="block text-primary underline text-sm break-all" dir="ltr">{link}</a>)}
       </div>}
