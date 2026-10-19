@@ -64,6 +64,36 @@ export type Database = {
           },
         ]
       }
+      email_preregistrations: {
+        Row: {
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          created_by: string
+          email: string
+          full_name: string
+          roles: Database["public"]["Enums"]["app_role"][]
+        }
+        Insert: {
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          created_by: string
+          email: string
+          full_name: string
+          roles?: Database["public"]["Enums"]["app_role"][]
+        }
+        Update: {
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          created_by?: string
+          email?: string
+          full_name?: string
+          roles?: Database["public"]["Enums"]["app_role"][]
+        }
+        Relationships: []
+      }
       formatted_pages: {
         Row: {
           document: Json | null
@@ -330,6 +360,18 @@ export type Database = {
           lessons_count: number
           roles: Database["public"]["Enums"]["app_role"][]
         }[]
+      }
+      admin_remove_preregistration: {
+        Args: { _email: string }
+        Returns: undefined
+      }
+      admin_save_preregistration: {
+        Args: {
+          _email: string
+          _name: string
+          _roles: Database["public"]["Enums"]["app_role"][]
+        }
+        Returns: undefined
       }
       admin_set_hidden: {
         Args: { _hidden: boolean; _user_id: string }

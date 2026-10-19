@@ -1,4 +1,10 @@
 # Notebook implementation
+- [x] Add first-time student tour with per-user local completion; test skip/finish and inspect desktop/mobile steps using simulated student roles, without changing real accounts.
+- [x] Repair private image URL renewal and bounded preview retries; verify the existing photo, download, forced failures and successful retry.
+- [x] Remove directory search; verify directory on desktop/mobile without horizontal overflow.
+- [x] Add admin lesson/summary previews using the shared bound reader; verify the existing lesson image from admin.
+- [x] Add secure email pre-registration with verified Google name/role binding; verify admin save, reload readback and cancellation.
+- [ ] Verify actual new Google-account preset binding (blocked: no new student sign-in; rollback SQL checks cannot run under the sandbox connection's restricted permissions). Regression SQL is retained in src/test/email-preregistration.sql for a privileged test runner.
 - [x] Separate notebook-only home content from summaries, including opened notebooks; retain summary reading from its own view.
 - [x] Replace suggestion popup with a dedicated labelled navigation page.
 - [x] Add protected non-hidden student directory and student-readable suggestion threads.
