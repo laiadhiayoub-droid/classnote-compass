@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { ArrowRight, Lightbulb, Loader2, Search, Send, Trash2, Users } from "lucide-react";
@@ -27,6 +27,7 @@ export const Route = createFileRoute("/suggestions")({
   ] }),
   pendingComponent: CommunityPending,
   errorComponent: CommunityError,
+  notFoundComponent: CommunityUnavailable,
   component: SuggestionsPage,
 });
 
@@ -38,11 +39,17 @@ function CommunityPending() {
 function CommunityError({ reset }: { reset: () => void }) {
   const { t } = useI18n();
   const qc = useQueryClient();
+  const router = useRouter();
   return <main className="mx-auto max-w-5xl px-4 py-12 space-y-4">
     <p role="alert">{t("suggestionsFailedLoad")}</p>
-    <Button onClick={() => { void qc.invalidateQueries({ queryKey: communityQuery.queryKey }); reset(); }}>{t("retry")}</Button>
+    <Button onClick={async () => { await qc.invalidateQueries({ queryKey: communityQuery.queryKey }); await router.invalidate(); reset(); }}>{t("retry")}</Button>
     <Button variant="outline" asChild><Link to="/">{t("backToLibrary")}</Link></Button>
   </main>;
+}
+
+function CommunityUnavailable() {
+  const { t } = useI18n();
+  return <main className="mx-auto max-w-5xl px-4 py-12 space-y-4"><p>{t("suggestionsFailedLoad")}</p><Button asChild><Link to="/">{t("backToLibrary")}</Link></Button></main>;
 }
 
 function SuggestionsPage() {

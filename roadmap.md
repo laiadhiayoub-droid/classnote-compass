@@ -1,8 +1,9 @@
 # Notebook implementation
-- [ ] Separate notebook-only home content from summaries, including opened notebooks.
-- [ ] Replace suggestion popup with a dedicated labelled navigation page.
-- [ ] Add protected non-hidden student directory and student-readable suggestion threads.
-- [ ] Test content separation, community privacy, and the signed-in suggestions flow.
+- [x] Separate notebook-only home content from summaries, including opened notebooks; retain summary reading from its own view.
+- [x] Replace suggestion popup with a dedicated labelled navigation page.
+- [x] Add protected non-hidden student directory and student-readable suggestion threads.
+- [x] Test content separation and access gating; verify signed-in suggestion saving/readback/deletion and layouts at 949px and 390px.
+- [ ] Verify hidden-directory and banned-access end-to-end as a regular student (blocked: only the primary admin account exists; no sample accounts requested).
 - [x] Reconstruct source experiments as safe, responsive SVG diagrams.
 - [x] Bind multiple uploaded photos as ordered pages and add page navigation.
 - [x] Add admin-managed subscriber membership and protected formatted documents.

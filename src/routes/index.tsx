@@ -502,7 +502,6 @@ function Index() {
                         onShare={() => shareLesson(l)}
                         onDelete={isAdmin ? () => setDeleting(l) : undefined}
                         onOpen={() => {
-                          setOpenBook({ userId: l.user_id, subject: l.subject, count: 0, hasNew: false });
                           setZoom(l);
                         }} />
                     ))}
@@ -523,7 +522,7 @@ function Index() {
                       onShare={() => shareLesson(l)}
                       onDelete={isAdmin ? () => setDeleting(l) : undefined}
                       onOpen={() => {
-                        setOpenBook({ userId: l.user_id, subject: l.subject, count: 0, hasNew: false });
+                        if (l.content_type === "lesson") setOpenBook({ userId: l.user_id, subject: l.subject, count: 0, hasNew: false });
                         setZoom(l);
                       }} />
                   ))}
@@ -573,7 +572,7 @@ function Index() {
           myLessons={(lessons.data ?? []).filter((l) => l.user_id === user.id)}
           onDone={() => qc.invalidateQueries({ queryKey: ["lessons"] })} />
       )}
-      <BoundNotebookReader pages={zoom ? groupPages(bookLessons, zoom) : bookLessons} initialId={zoom?.id ?? null} roles={roles.data ?? []} onClose={() => setZoom(null)} />
+      <BoundNotebookReader pages={zoom ? groupPages(zoom.content_type === "summary" ? (lessons.data ?? []).filter(l => l.content_type === "summary" && l.user_id === zoom.user_id && l.subject === zoom.subject && authorVisible(l.user_id)) : bookLessons, zoom) : bookLessons} initialId={zoom?.id ?? null} roles={roles.data ?? []} onClose={() => setZoom(null)} />
     </div>
   );
 }
