@@ -1,4 +1,9 @@
 # Notebook implementation
+- [ ] Add first-time student tour with local completion and responsive steps.
+- [ ] Repair private image URL renewal and resilient preview retries.
+- [ ] Remove directory search.
+- [ ] Add admin lesson/summary previews.
+- [ ] Add secure email pre-registration with verified Google name/role binding and test it.
 - [x] Separate notebook-only home content from summaries, including opened notebooks; retain summary reading from its own view.
 - [x] Replace suggestion popup with a dedicated labelled navigation page.
 - [x] Add protected non-hidden student directory and student-readable suggestion threads.
