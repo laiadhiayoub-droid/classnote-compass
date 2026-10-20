@@ -3,7 +3,8 @@ BEGIN;
 DO $$
 DECLARE admin_id uuid; admin_email text; rejected boolean := false;
 BEGIN
- SELECT u.id,u.email INTO admin_id,admin_email FROM auth.users u JOIN public.user_roles r ON r.user_id=u.id WHERE r.role='admin' LIMIT 1;
+ SELECT r.user_id INTO admin_id FROM public.user_roles r WHERE r.role='admin' LIMIT 1;
+ admin_email := 'profile-regression@example.invalid';
  IF admin_id IS NULL THEN RAISE EXCEPTION 'existing admin required'; END IF;
  PERFORM set_config('request.jwt.claims',jsonb_build_object('sub',admin_id,'email',admin_email,'role','authenticated')::text,true);
  PERFORM public.admin_save_student_profile(admin_id,'Profile regression','2000-01-02','2AS languages','https://instagram.com/student',ARRAY['admin','student']::public.app_role[]);
