@@ -1,8 +1,9 @@
 # Notebook implementation
-- [ ] Upgrade student directory cards and secure profile fields; exclude hidden and banned accounts.
-- [ ] Add required student profile completion and anytime profile editing.
-- [ ] Add persistent admin registration alerts and full student profile/role editing.
-- [ ] Test profile/privacy rules and verify profile editing and alerts through the UI.
+- [x] Upgrade student directory cards and secure profile fields; exclude hidden and banned accounts in the directory RPC.
+- [x] Add required student profile completion and anytime profile editing.
+- [x] Add persistent admin registration alerts and full student profile/role editing.
+- [x] Test profile completion, optional links and age rules; verify admin save/reload, restore original data, profile settings, directory cards, mobile dialog and alert review/dismissal; all 52 tests pass.
+- [ ] Verify first-login completion and new-registration trigger with a real new student (blocked: no new student sign-in); database privacy rollback regression retained in src/test/student-profile.sql, but sandbox lacks authenticated RPC execution permissions.
 - [x] Add first-time student tour with per-user local completion; test skip/finish and inspect desktop/mobile steps using simulated student roles, without changing real accounts.
 - [x] Repair private image URL renewal and bounded preview retries; verify the existing photo, download, forced failures and successful retry.
 - [x] Remove directory search; verify directory on desktop/mobile without horizontal overflow.
