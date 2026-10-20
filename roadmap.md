@@ -1,4 +1,5 @@
 # Notebook implementation
+- [ ] Import image-to-answers Arabic transcription, Markdown formatting and text analysis into formatted notebooks without changing diagram display or layout; test and verify.
 - [x] Upgrade student directory cards and secure profile fields; exclude hidden and banned accounts in the directory RPC.
 - [x] Add required student profile completion and anytime profile editing.
 - [x] Add persistent admin registration alerts and full student profile/role editing.
