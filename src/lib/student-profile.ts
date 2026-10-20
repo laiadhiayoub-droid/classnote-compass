@@ -8,5 +8,6 @@ export function profileComplete(profile: StudentProfile | null | undefined): boo
 }
 export function ageAt(birthDate: string, today = new Date()): number {
   const [year, month, day] = birthDate.split("-").map(Number);
+  if (year === undefined || month === undefined || day === undefined) return NaN;
   return today.getFullYear() - year - (today.getMonth() + 1 < month || (today.getMonth() + 1 === month && today.getDate() < day) ? 1 : 0);
 }
