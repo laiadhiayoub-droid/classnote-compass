@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { generateFormattedPage, updateFormattedPage } from "@/lib/notebook.functions";
 import { canReadFormatted, notebookDocumentSchema, type NotebookDocument } from "@/lib/notebook";
 import { NotebookDiagram } from "@/components/NotebookDiagram";
+import { NotebookMarkdown } from "@/components/NotebookMarkdown";
 import { useI18n } from "@/lib/i18n";
 import { signLessonImage, IMAGE_URL_SECONDS, IMAGE_URL_STALE_MS } from "@/lib/storage-images";
 
@@ -180,7 +181,7 @@ export function BoundNotebookReader({pages, initialId, roles, onClose}: {pages:P
             <article className="digital-sheet mx-auto" dir={parsed.data.direction}>
               {parsed.data.blocks.map((block,i)=><div key={i} className={`document-block document-${block.kind}`}>
                 {block.kind === "diagram" && <NotebookDiagram diagram={block.diagram}/>}
-                {block.runs.map((run,j)=><span key={j} style={{color:run.color,backgroundColor:run.highlight ?? "transparent",fontWeight:run.bold?700:400,textDecoration:run.underline?"underline":"none"}}>{run.text}</span>)}
+                {block.kind === "markdown" ? <NotebookMarkdown text={block.runs.map(run=>run.text).join("")}/> : block.runs.map((run,j)=><span key={j} style={{color:run.color,backgroundColor:run.highlight ?? "transparent",fontWeight:run.bold?700:400,textDecoration:run.underline?"underline":"none"}}>{run.text}</span>)}
               </div>)}
               <footer className="document-footer">{index+1}</footer>
             </article>

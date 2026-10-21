@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { notebookDiagramSchema } from "./notebook-diagram";
+import { notebookAnalysisSchema } from "./notebook-analysis";
 
 export type NotebookRole = "student" | "writer" | "subscriber" | "admin";
 export const canReadFormatted = (roles: readonly string[]) => roles.includes("subscriber") || roles.includes("admin");
@@ -10,6 +11,10 @@ const color = z.string().regex(/^#[0-9a-fA-F]{6}$/);
 export const notebookDocumentSchema = z.object({
   direction: z.enum(["rtl", "ltr"]),
   blocks: z.array(z.union([z.object({
+    kind: z.literal("markdown"),
+    runs: z.array(z.object({ text: z.string(), color, highlight: color.nullable(), bold: z.boolean(), underline: z.boolean() })),
+    diagram: z.null().optional(),
+  }).strict(), z.object({
     kind: z.enum(["heading", "subheading", "paragraph", "list", "quote"]),
     runs: z.array(z.object({ text: z.string(), color, highlight: color.nullable(), bold: z.boolean(), underline: z.boolean() })),
     diagram: z.null().optional(),
@@ -19,6 +24,7 @@ export const notebookDocumentSchema = z.object({
     diagram: notebookDiagramSchema,
   }).strict()])),
   uncertain: z.boolean(),
+  analysis: notebookAnalysisSchema.optional(),
 }).strict();
 export type NotebookDocument = z.infer<typeof notebookDocumentSchema>;
 

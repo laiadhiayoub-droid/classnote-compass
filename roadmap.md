@@ -1,5 +1,6 @@
 # Notebook implementation
-- [ ] Import image-to-answers Arabic transcription, Markdown formatting and text analysis into formatted notebooks without changing diagram display or layout; test and verify.
+- [x] Import image-to-answers analysis prompt, Arabic Markdown normalization and text analysis into formatted notebooks; retain existing diagram reconstruction, renderer, reader layout and timers. Eight text-pipeline regression tests pass; build OK.
+- [ ] Verify live formatted generation/readback with a source notebook (blocked: the available signed-in student library contains zero notebooks and has no formatted-reading permission; no sample records added).
 - [x] Upgrade student directory cards and secure profile fields; exclude hidden and banned accounts in the directory RPC.
 - [x] Add required student profile completion and anytime profile editing.
 - [x] Add persistent admin registration alerts and full student profile/role editing.

@@ -11,6 +11,7 @@
 
 - Store formatted notebook documents separately from ordinary lesson metadata with subscriber/admin SELECT RLS; never return generated content from the publishing endpoint to writers.
 - Generate one source page per authenticated server request and render validated structured blocks, not arbitrary HTML, to keep source formatting safe and retries page-scoped.
+- Formatted text uses the image-to-answers analysis prompt and Markdown normalization through the AI Gateway SDK; retain the existing separate validated diagram reconstruction and reader layout so importing text logic cannot replace diagram presentation. Store analysis with the protected document and render Markdown without injected HTML or remote OCR images.
 - Reconstruct notebook diagrams as validated whitelisted SVG primitives rendered by React, never injected markup; retain legacy text blocks and preserve the last ready document if an explicit admin regeneration fails.
 - Bind uploaded batches using the existing root lesson/continuation relationship and deterministic page ordering to preserve existing notebooks.
 - All UI text goes through the STRINGS map in `src/lib/i18n.tsx` (ar/en/fr/es) via `useI18n().t(key, vars)`; per-language subject, semester, content-type and timetable labels live in `src/lib/library.ts` and `src/lib/timetable.ts`. Never hardcode UI strings in components.
