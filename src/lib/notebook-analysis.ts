@@ -17,10 +17,14 @@ Return ONLY valid JSON (no markdown fences) with this exact shape:
 
 Be accurate. If a field is not applicable, return empty string / empty array / false / null as specified.`;
 
+type AnalysisJson = string | number | boolean | null | AnalysisJson[] | { [key: string]: AnalysisJson };
+const jsonValue: z.ZodType<AnalysisJson> = z.lazy(() => z.union([
+  z.string(), z.number(), z.boolean(), z.null(), z.array(jsonValue), z.record(jsonValue),
+]));
 export const notebookAnalysisSchema = z.object({
   description: z.string(), ocrText: z.string(), isCode: z.boolean(),
   codeLanguage: z.string().nullable(), latex: z.string(), tableMarkdown: z.string(),
-  tableJson: z.array(z.record(z.unknown())),
+  tableJson: z.array(z.record(jsonValue)),
   colors: z.array(z.object({ hex: z.string().regex(/^#[0-9a-fA-F]{6}$/), name: z.string() })),
 });
 export type NotebookAnalysis = z.infer<typeof notebookAnalysisSchema>;
