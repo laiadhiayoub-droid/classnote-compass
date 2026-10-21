@@ -4,7 +4,7 @@ import { z } from "zod";
 import { notebookDocumentSchema, type NotebookDocument } from "./notebook";
 import { diagramWireSchema } from "./notebook-diagram";
 import { IMAGE_ANALYSIS_PROMPT, parseImageAnalysis } from "./notebook-analysis";
-import { parseNotebook } from "./notebook-markdown";
+import { combineNotebookText } from "./notebook-text";
 
 const wireSchema = z.object({ direction: z.enum(["rtl", "ltr"]), blocks: z.array(z.object({
   kind: z.enum(["heading", "subheading", "paragraph", "list", "quote", "diagram"]),
@@ -47,28 +47,5 @@ export async function transcribeNotebook(image: Uint8Array, mediaType: string): 
   // Keep the existing reconstruction prompt, validation and React diagram renderer.
   const original = notebookDocumentSchema.parse(JSON.parse(await readResponse(DIAGRAM_PROMPT,
     "Transcribe this source page and reconstruct its experiments as faithful vector diagrams.", imageUrl, true)));
-  const parsed = parseNotebook(analysis.ocrText);
-  const diagrams = original.blocks.filter(block => block.kind === "diagram");
-  const markdown = (text: string): NotebookDocument["blocks"][number] => ({
-    kind: "markdown", runs: [{text, color: "#202124", highlight: null, bold: false, underline: false}], diagram: null,
-  });
-  let diagramIndex = 0;
-  const blocks: NotebookDocument["blocks"] = [];
-  if (parsed.some(block => block.type === "diagram")) {
-    for (const block of parsed) {
-      if (block.type === "markdown") blocks.push(markdown(block.content));
-      else { const diagram = diagrams[diagramIndex++]; if (diagram) blocks.push(diagram); }
-    }
-    blocks.push(...diagrams.slice(diagramIndex));
-  } else if (diagrams.length) {
-    // No OCR drawing marker: retain the existing diagram slots in source order.
-    const textBlocks = parsed.filter(block => block.type === "markdown");
-    let textIndex = 0;
-    for (const block of original.blocks) {
-      if (block.kind === "diagram") blocks.push(block);
-      else { const source = textBlocks[textIndex++]; if (source) blocks.push(markdown(source.content)); }
-    }
-    blocks.push(...textBlocks.slice(textIndex).map(block => markdown(block.content)));
-  } else blocks.push(...parsed.filter(block => block.type === "markdown").map(block => markdown(block.content)));
-  return notebookDocumentSchema.parse({ direction: original.direction, blocks, uncertain: original.uncertain, analysis });
+  return combineNotebookText(analysis, original);
 }
