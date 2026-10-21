@@ -46,18 +46,16 @@ export const generateFormattedPage = createServerFn({ method: "POST" })
     const claim = await supabaseAdmin.from("formatted_pages").upsert({lesson_id:lesson.id,status:"processing",error_message:null,updated_at:new Date().toISOString()});
     if(claim.error) throw claim.error;
     try {
-      const apiKey = process.env["LOVABLE_API_KEY"];
-      if(!apiKey) throw new Error("خدمة التحويل غير مفعّلة.");
       const image = await context.supabase.storage.from("lessons-images").download(lesson.image_path);
       if(image.error || !image.data) throw new Error("تعذّر قراءة صورة الصفحة.");
       const {transcribeNotebook} = await import("./notebook-ai.server");
-      const document = await transcribeNotebook(new Uint8Array(await image.data.arrayBuffer()),image.data.type || "image/jpeg",apiKey);
+      const document = await transcribeNotebook(new Uint8Array(await image.data.arrayBuffer()),image.data.type || "image/jpeg");
       const saved = await supabaseAdmin.from("formatted_pages").upsert({lesson_id:lesson.id,document,status:"ready",error_message:null,updated_at:new Date().toISOString()});
       if(saved.error) throw saved.error;
       // Never send subscriber content back to a publishing writer.
       return {status:"ready",message:null};
     } catch(cause) {
-      const status = cause && typeof cause === "object" && "statusCode" in cause ? Number(cause.statusCode) : 0;
+      const status = cause && typeof cause === "object" ? "httpStatus" in cause ? Number(cause.httpStatus) : "statusCode" in cause ? Number(cause.statusCode) : 0 : 0;
       const message = status === 402 || status === 403 ? "خدمة التحويل متوقفة بسبب رصيد أو صلاحيات خدمة الذكاء الاصطناعي. على الإدارة إعادة تفعيلها." : "تعذّر تنسيق الصفحة؛ يمكنك المحاولة مجدداً أو قراءة الصورة الأصلية.";
       if(status===402 || status===403 || status===401 || status===404) await supabaseAdmin.from("notebook_generation_state").upsert({id:1,paused:true,reason:message});
       await supabaseAdmin.from("formatted_pages").update({status:existing?.status === "ready" ? "ready" : "error",error_message:message,updated_at:new Date().toISOString()}).eq("lesson_id",lesson.id);
